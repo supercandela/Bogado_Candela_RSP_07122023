@@ -1,0 +1,97 @@
+﻿using Entidades.Excepciones;
+using Entidades.Exceptions;
+using Entidades.Interfaces;
+using Entidades.Modelos;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.ConstrainedExecution;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+
+namespace Entidades.Files
+{    
+    public static class FileManager
+    {
+        private static string path;
+
+        static FileManager ()
+        {
+            path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\20231207_Alumna_Bogado_Candela\\";
+            FileManager.ValidaExistenciaDeDirectorio();
+        }
+
+        /// <summary>
+        /// Sera el método para poder generar archivos de texto.El mismo se podrá usar para agregar información a un archivo ya existente o sobre escribirlo.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="nombreArchivo"></param>
+        /// <param name="append"></param>
+        public static void Guardar (string data, string nombreArchivo, bool append)
+        {
+            //Agrego el nombre del archivo al Path
+            path = Path.Combine(path, nombreArchivo);
+
+            //Reviso si el archivo existe para setear el append en False
+            if (!File.Exists(path))
+            {
+                append = false;
+            }
+
+            using (StreamWriter sw = new StreamWriter(path, append))
+            {
+                sw.WriteLine(data);
+            }
+        }
+
+        /// <summary>
+        /// Serializar:
+        /// Sera genérico y solo aceptara tipos por referencia.
+        /// Sera el método encargado de serializar en json.
+        /// Retornara true al terminar la serialización;
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="elemento"></param>
+        /// <param name="nombreArchivo"></param>
+        /// <returns></returns>
+        public static bool Serializar<T> (T elemento, string nombreArchivo)
+        {
+
+            return false;
+        }
+
+        /// <summary>
+        /// Revisa si existe el directorio, caso contrario lo crea.
+        /// De existir un error, lanza la excepción FileManagerException
+        /// </summary>
+        /// <exception cref="FileManagerException"></exception>
+        private static void ValidaExistenciaDeDirectorio ()
+        {
+            try
+            {
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Se genera la excepción.
+                Exception exPrincipal =  new FileManagerException("Error al crear el directorio", ex);
+
+                //Seteo el nombre del archivo
+                string nombreArchivo = "dataBase_logs.txt";
+
+                //Convierto a string la información a guardar
+                string dataAGuardar = $"=>{DateTime.Now} Se produjo una excepción: {exPrincipal.GetType()} - Mensaje: {exPrincipal.Message}{Environment.NewLine}";
+                dataAGuardar += $"=>{DateTime.Now} Excepción Interna: {ex.GetType()} - Mensaje: {ex.Message}{Environment.NewLine}";
+
+                //Llamo a FileManager para hacer el log de la excepción obtenida
+                FileManager.Guardar(dataAGuardar, nombreArchivo, true);
+            }
+        }
+    }
+}
