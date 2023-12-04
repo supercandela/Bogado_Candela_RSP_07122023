@@ -54,7 +54,7 @@ namespace Entidades.DataBase
                     Exception ex = new ComidaInvalidaExeption("Comida inválida.");
 
                     //Seteo el nombre del archivo
-                    string nombreArchivo = "dataBase_logs.txt";
+                    string nombreArchivo = "logs.txt";
 
                     //Convierto a string la información a guardar
                     string dataAGuardar = $"=>{DateTime.Now} Se produjo una excepción: {ex.GetType()} - Mensaje: {ex.Message}{Environment.NewLine}";
@@ -69,7 +69,7 @@ namespace Entidades.DataBase
                 Exception exPrincipal = new DataBaseManagerException("Error de Lectura en la base de datos.", ex);
 
                 //Seteo el nombre del archivo
-                string nombreArchivo = "dataBase_logs.txt";
+                string nombreArchivo = "logs.txt";
 
                 //Convierto a string la información a guardar
                 string dataAGuardar = $"=>{DateTime.Now} Se produjo una excepción: {exPrincipal.GetType()} - Mensaje: {exPrincipal.Message}{Environment.NewLine}";
@@ -101,7 +101,7 @@ namespace Entidades.DataBase
             try
             {
                  using (connection)
-                {
+                 {
                     string query =
                         "INSERT INTO tickets " +
                         "(empleado, ticket) " +
@@ -122,7 +122,7 @@ namespace Entidades.DataBase
                         Exception ex = new DataBaseManagerException("No se pudo crear el ticket.");
 
                         //Seteo el nombre del archivo
-                        string nombreArchivo = "dataBase_logs.txt";
+                        string nombreArchivo = "logs.txt";
 
                         //Convierto a string la información a guardar
                         string dataAGuardar = $"=>{DateTime.Now} Se produjo una excepción: {ex.GetType()} - Mensaje: {ex.Message}{Environment.NewLine}";
@@ -130,7 +130,7 @@ namespace Entidades.DataBase
                         //Llamo a FileManager para hacer el log de la excepción obtenida
                         FileManager.Guardar(dataAGuardar, nombreArchivo, true);
                     }
-                }
+                 }
             }
             catch (Exception ex)
             {
@@ -138,7 +138,7 @@ namespace Entidades.DataBase
                 Exception exPrincipal = new DataBaseManagerException("Error de Escritura en la base de datos.", ex);
 
                 //Seteo el nombre del archivo
-                string nombreArchivo = "dataBase_logs.txt";
+                string nombreArchivo = "logs.txt";
 
                 //Convierto a string la información a guardar
                 string dataAGuardar = $"=>{DateTime.Now} Se produjo una excepción: {exPrincipal.GetType()} - Mensaje: {exPrincipal.Message}{Environment.NewLine}";

@@ -77,7 +77,15 @@ namespace FrmView
         private void FrmView_FormClosing(object sender, FormClosingEventArgs e)
         {
             //Alumno: Serializar el cocinero antes de cerrar el formulario
-            //FileManager.Serializar();
+            string nombreArchivo = "cocinero.json";
+            if (FileManager.Serializar(this.hamburguesero, nombreArchivo))
+            {
+                MessageBox.Show("Información guardada con éxito.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Información no guardada.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
     }
 }

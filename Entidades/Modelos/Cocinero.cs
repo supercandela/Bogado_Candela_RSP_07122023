@@ -59,6 +59,7 @@ namespace Entidades.Modelos
         public Cocinero(string nombre)
         {
             this.nombre = nombre;
+            this.cantPedidosFinalizados = 0;
         }
 
         /// <summary>
@@ -71,17 +72,14 @@ namespace Entidades.Modelos
         private void IniciarIngreso()
         {
             CancellationToken cancellationToken = this.cancellation.Token;
-            //this.tarea = Task.Run(() => this.NotificarNuevoIngreso(), cancellationToken);
-            this.tarea = new Task(this.NotificarNuevoIngreso);
-            
+            this.tarea = Task.Run(() => this.NotificarNuevoIngreso(), cancellationToken);
+                        
             while (!this.cancellation.IsCancellationRequested)
             {
-                tarea.Start();
                 this.EsperarProximoIngreso();
                 this.cantPedidosFinalizados ++;
                 DataBaseManager.GuardarTicket(this.Nombre, this.menu);
             }
-            
         }
 
         /// <summary>
@@ -114,7 +112,7 @@ namespace Entidades.Modelos
 
             if (this.OnDemora is not null)
             {
-                this.OnDemora.Invoke(this.demoraPreparacionTotal);
+                this.OnDemora.Invoke(tiempoEspera);
                 while (!this.cancellation.IsCancellationRequested && !this.menu.Estado)
                 {
                     Thread.Sleep(1000);

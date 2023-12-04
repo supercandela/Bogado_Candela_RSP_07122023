@@ -33,15 +33,15 @@ namespace Entidades.Files
         public static void Guardar (string data, string nombreArchivo, bool append)
         {
             //Agrego el nombre del archivo al Path
-            path = Path.Combine(path, nombreArchivo);
+            string rutaCompleta = Path.Combine(path, nombreArchivo);
 
             //Reviso si el archivo existe para setear el append en False
-            if (!File.Exists(path))
+            if (!File.Exists(rutaCompleta))
             {
                 append = false;
             }
 
-            using (StreamWriter sw = new StreamWriter(path, append))
+            using (StreamWriter sw = new StreamWriter(rutaCompleta, append))
             {
                 sw.WriteLine(data);
             }
@@ -57,10 +57,25 @@ namespace Entidades.Files
         /// <param name="elemento"></param>
         /// <param name="nombreArchivo"></param>
         /// <returns></returns>
-        public static bool Serializar<T> (T elemento, string nombreArchivo)
+        public static bool Serializar<T> (T elemento, string nombreArchivo) where T : class
         {
+            bool serializado = false;
+            if (elemento is not null && nombreArchivo.Trim().Length > 0)
+            {
+                //Agrego el nombre del archivo al Path
+                string rutaCompleta = Path.Combine(path, nombreArchivo);
 
-            return false;
+                JsonSerializerOptions opciones = new JsonSerializerOptions();
+                opciones.WriteIndented = true;
+
+                using (StreamWriter sw =  new StreamWriter(rutaCompleta))
+                {
+                    string elementoData = JsonSerializer.Serialize(elemento, opciones);
+                    sw.WriteLine(elementoData);
+                }
+                serializado = true;
+            }
+            return serializado;
         }
 
         /// <summary>
@@ -83,7 +98,7 @@ namespace Entidades.Files
                 Exception exPrincipal =  new FileManagerException("Error al crear el directorio", ex);
 
                 //Seteo el nombre del archivo
-                string nombreArchivo = "dataBase_logs.txt";
+                string nombreArchivo = "logs.txt";
 
                 //Convierto a string la información a guardar
                 string dataAGuardar = $"=>{DateTime.Now} Se produjo una excepción: {exPrincipal.GetType()} - Mensaje: {exPrincipal.Message}{Environment.NewLine}";
