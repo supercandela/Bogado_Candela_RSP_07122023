@@ -98,7 +98,7 @@
             lblTmp.AutoSize = true;
             lblTmp.Font = new Font("Segoe UI", 18F, FontStyle.Italic, GraphicsUnit.Point);
             lblTmp.ForeColor = Color.FromArgb(192, 64, 0);
-            lblTmp.Location = new Point(859, 507);
+            lblTmp.Location = new Point(880, 515);
             lblTmp.Margin = new Padding(4, 0, 4, 0);
             lblTmp.Name = "lblTmp";
             lblTmp.Size = new Size(428, 48);

@@ -30,21 +30,45 @@ namespace Entidades.Files
         /// <param name="data"></param>
         /// <param name="nombreArchivo"></param>
         /// <param name="append"></param>
+        /// <exception cref="FileManagerException"></exception>
         public static void Guardar (string data, string nombreArchivo, bool append)
         {
-            //Agrego el nombre del archivo al Path
-            string rutaCompleta = Path.Combine(path, nombreArchivo);
-
-            //Reviso si el archivo existe para setear el append en False
-            if (!File.Exists(rutaCompleta))
+            try
             {
-                append = false;
-            }
+                //Agrego el nombre del archivo al Path
+                string rutaCompleta = Path.Combine(path, nombreArchivo);
 
-            using (StreamWriter sw = new StreamWriter(rutaCompleta, append))
-            {
-                sw.WriteLine(data);
+                //Reviso si el archivo existe para setear el append en False
+                if (!File.Exists(rutaCompleta))
+                {
+                    append = false;
+                }
+
+                using (StreamWriter sw = new StreamWriter(rutaCompleta, append))
+                {
+                    sw.WriteLine(data);
+                }
             }
+            catch (Exception ex)
+            {
+                throw new FileManagerException("Error al guardar el archivo.", ex);
+            }
+            //catch (Exception ex)
+            //{
+
+            //    //Se genera la excepción.
+            //    Exception exPrincipal = new FileManagerException("Error al guardar el archivo.", ex);
+
+            //    //Seteo el nombre del archivo
+            //    string nombreArchivoAGuardar = "logs.txt";
+
+            //    //Convierto a string la información a guardar
+            //    string dataAGuardar = $"=>{DateTime.Now} Se produjo una excepción: {exPrincipal.GetType()} - Mensaje: {exPrincipal.Message}{Environment.NewLine}";
+            //    dataAGuardar += $"=>{DateTime.Now} Excepción Interna: {ex.GetType()} - Mensaje: {ex.Message}{Environment.NewLine}";
+
+            //    //Llamo a FileManager para hacer el log de la excepción obtenida
+            //    FileManager.Guardar(dataAGuardar, nombreArchivoAGuardar, true);
+            //}
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace Entidades.MetodosDeExtension
         /// <returns>Costo inicial incrementado según la lista de ingredientes</returns>
         public static double CalcularCostoIngredientes (this List<EIngrediente> ingredientes, int costoInicial)
         {
-            double costoIncrementado = 0;
+            double costoIncrementado = costoInicial;
             foreach (EIngrediente item in ingredientes)
             {
                 double porcentaje = (int)item;

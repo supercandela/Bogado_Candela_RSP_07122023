@@ -59,7 +59,7 @@ namespace Entidades.Modelos
         public Cocinero(string nombre)
         {
             this.nombre = nombre;
-            this.cantPedidosFinalizados = 0;
+            //this.cantPedidosFinalizados = 0;
         }
 
         /// <summary>
@@ -71,15 +71,19 @@ namespace Entidades.Modelos
         /// </summary>
         private void IniciarIngreso()
         {
-            CancellationToken cancellationToken = this.cancellation.Token;
-            this.tarea = Task.Run(() => this.NotificarNuevoIngreso(), cancellationToken);
-                        
-            while (!this.cancellation.IsCancellationRequested)
+            this.tarea = Task.Run(() =>
             {
-                this.EsperarProximoIngreso();
-                this.cantPedidosFinalizados ++;
-                DataBaseManager.GuardarTicket(this.Nombre, this.menu);
-            }
+                while (!this.cancellation.IsCancellationRequested)
+                {
+                    this.NotificarNuevoIngreso();
+                    Thread.Sleep(1000);
+                    this.EsperarProximoIngreso();
+
+                    this.cantPedidosFinalizados++;
+                    DataBaseManager.GuardarTicket(this.Nombre, this.menu);
+                }
+
+            }, this.cancellation.Token);
         }
 
         /// <summary>
@@ -90,7 +94,7 @@ namespace Entidades.Modelos
         /// </summary>
         private void NotificarNuevoIngreso()
         {
-            if (this.OnIngreso is not null)
+            if (this.OnIngreso != null)
             {
                 this.menu = new();
                 this.menu.IniciarPreparacion();
@@ -110,16 +114,16 @@ namespace Entidades.Modelos
         {
             int tiempoEspera = 0;
 
-            if (this.OnDemora is not null)
+            if (this.OnDemora != null)
             {
-                this.OnDemora.Invoke(tiempoEspera);
                 while (!this.cancellation.IsCancellationRequested && !this.menu.Estado)
                 {
-                    Thread.Sleep(1000);
+                    this.OnDemora.Invoke(tiempoEspera);
                     tiempoEspera++;
+                    Thread.Sleep(1000);
                 }
             }
-            this.demoraPreparacionTotal = tiempoEspera;
+            this.demoraPreparacionTotal += tiempoEspera;
         }
     }
 }

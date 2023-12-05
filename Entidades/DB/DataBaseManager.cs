@@ -38,29 +38,32 @@ namespace Entidades.DataBase
 
             try
             {
-                string query = "SELECT imagen FROM comidas WHERE tipo_comida LIKE @0";
-                SqlCommand cmd = new SqlCommand(query, connection) ;
-                cmd.Parameters.AddWithValue("@0", "%" + tipo + "%");
-                connection.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                if (reader.Read())
+                using (SqlConnection connection = new SqlConnection(stringConnection))
+                //using (DataBaseManager.connection)
                 {
-                    urlImagen = reader.GetString(0);
-                }
-                else
-                {
-                    //Se genera la excepción. 
-                    Exception ex = new ComidaInvalidaExeption("Comida inválida.");
+                    string query = "SELECT imagen FROM comidas WHERE tipo_comida LIKE @0";
+                    SqlCommand cmd = new SqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@0", "%" + tipo + "%");
+                    connection.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        urlImagen = reader.GetString(0);
+                    }
+                    else
+                    {
+                        //Se genera la excepción. 
+                        Exception ex = new ComidaInvalidaExeption("Comida inválida.");
 
-                    //Seteo el nombre del archivo
-                    string nombreArchivo = "logs.txt";
+                        //Seteo el nombre del archivo
+                        string nombreArchivo = "logs.txt";
 
-                    //Convierto a string la información a guardar
-                    string dataAGuardar = $"=>{DateTime.Now} Se produjo una excepción: {ex.GetType()} - Mensaje: {ex.Message}{Environment.NewLine}";
+                        //Convierto a string la información a guardar
+                        string dataAGuardar = $"=>{DateTime.Now} Se produjo una excepción: {ex.GetType()} - Mensaje: {ex.Message} - Hamburguesa de tipo: {tipo}{Environment.NewLine}";
 
-                    //Llamo a FileManager para hacer el log de la excepción obtenida
-                    FileManager.Guardar(dataAGuardar, nombreArchivo, true);
+                        //Llamo a FileManager para hacer el log de la excepción obtenida
+                        FileManager.Guardar(dataAGuardar, nombreArchivo, true);
+                    }
                 }
             }
             catch (Exception ex)
@@ -78,13 +81,6 @@ namespace Entidades.DataBase
                 //Llamo a FileManager para hacer el log de la excepción obtenida
                 FileManager.Guardar(dataAGuardar, nombreArchivo, true);
             }
-            finally
-            {
-                if (connection != null && connection.State == System.Data.ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
             return urlImagen;
         }
 
@@ -100,8 +96,9 @@ namespace Entidades.DataBase
             bool ticketCreado = false;
             try
             {
-                 using (connection)
-                 {
+                using (SqlConnection connection = new SqlConnection(stringConnection))
+                // using (DataBaseManager.connection)
+                {
                     string query =
                         "INSERT INTO tickets " +
                         "(empleado, ticket) " +
