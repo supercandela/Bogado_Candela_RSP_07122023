@@ -60,11 +60,8 @@ namespace Entidades.Modelos
             if (!this.Estado)
             {
                 int tipoHamburguesa = this.random.Next(1, 10);
-                //Thread.Sleep(1000);
                 this.imagen = DataBaseManager.GetImagenComida($"Hamburguesa_{tipoHamburguesa}");
-                //Thread.Sleep(1000);
                 this.AgregarIngredientes();
-                //this.estado = true;
             }
         }
 
@@ -75,7 +72,6 @@ namespace Entidades.Modelos
             stringBuilder.AppendLine("Ingredientes: ");
             this.ingredientes.ForEach(i => stringBuilder.AppendLine(i.ToString()));
             return stringBuilder.ToString();
-
         }
 
         public override string ToString() => this.MostrarDatos();
