@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FrmView")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e923a5cf69422ba6af53586d24cdbcd5522071e8")]
 [assembly: System.Reflection.AssemblyProductAttribute("FrmView")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FrmView")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -52,3 +52,4 @@ C:\Users\Administrator\Desktop\X\Prog-Labo-2\repos\Labo2\Bogado.Candela.2C.Recup
 C:\Users\Administrator\Desktop\X\Prog-Labo-2\repos\Labo2\Bogado.Candela.2C.Recuperatorio\Bogado.Candela.Recuperatorio\Bogado.Candela.2C\FrmView\obj\Debug\net6.0-windows\FrmView.pdb
 C:\Users\Administrator\Desktop\X\Prog-Labo-2\repos\Labo2\Bogado.Candela.2C.Recuperatorio\Bogado.Candela.Recuperatorio\Bogado.Candela.2C\FrmView\obj\Debug\net6.0-windows\FrmView.genruntimeconfig.cache
 C:\Users\Administrator\Desktop\X\Prog-Labo-2\repos\Labo2\Bogado.Candela.2C.Recuperatorio\Bogado.Candela.Recuperatorio\Bogado.Candela.2C\FrmView\obj\Debug\net6.0-windows\ref\FrmView.dll
+C:\Users\Administrator\Desktop\X\Prog-Labo-2\repos\Labo2\Bogado.Candela.2C.Recuperatorio\Bogado.Candela.Recuperatorio\Bogado.Candela.2C\FrmView\obj\Debug\net6.0-windows\FrmView.sourcelink.json

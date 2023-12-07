@@ -22,3 +22,4 @@ C:\Users\Administrator\Desktop\X\Prog-Labo-2\repos\Labo2\Bogado.Candela.2C.Recup
 C:\Users\Administrator\Desktop\X\Prog-Labo-2\repos\Labo2\Bogado.Candela.2C.Recuperatorio\Bogado.Candela.Recuperatorio\Bogado.Candela.2C\Entidades\obj\Debug\net6.0\refint\Entidades.dll
 C:\Users\Administrator\Desktop\X\Prog-Labo-2\repos\Labo2\Bogado.Candela.2C.Recuperatorio\Bogado.Candela.Recuperatorio\Bogado.Candela.2C\Entidades\obj\Debug\net6.0\Entidades.pdb
 C:\Users\Administrator\Desktop\X\Prog-Labo-2\repos\Labo2\Bogado.Candela.2C.Recuperatorio\Bogado.Candela.Recuperatorio\Bogado.Candela.2C\Entidades\obj\Debug\net6.0\ref\Entidades.dll
+C:\Users\Administrator\Desktop\X\Prog-Labo-2\repos\Labo2\Bogado.Candela.2C.Recuperatorio\Bogado.Candela.Recuperatorio\Bogado.Candela.2C\Entidades\obj\Debug\net6.0\Entidades.sourcelink.json

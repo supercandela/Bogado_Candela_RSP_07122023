@@ -11,20 +11,32 @@ using Entidades.DataBase;
 namespace Entidades.Modelos
 {
     public delegate void DelegadoDemoraAtencion(double demora);
-    public delegate void DelegadoNuevoIngreso(IComestible menu);
+    public delegate void DelegadoPedidoEnCurso(IComestible pedidoEnPreparacion);
 
     public class Cocinero <T> where T : IComestible, new()
     {
         private CancellationTokenSource cancellation;
         private int cantPedidosFinalizados;
         private double demoraPreparacionTotal;
-        private T menu;
+        private Mozo<T> mozo;
         private string nombre;
+        private T pedidoEnPreparacion;
+        private Queue<T> pedidos;
         private Task tarea;
-        public event DelegadoNuevoIngreso OnIngreso;
-        public event DelegadoDemoraAtencion OnDemora;
 
-        //No hacer nada
+        public event DelegadoDemoraAtencion OnDemora;
+        public event DelegadoPedidoEnCurso OnPedido;
+
+
+        public int CantPedidosFinalizados { get => cantPedidosFinalizados; }
+
+        /// <summary>
+        /// En el set bloque verdadero:
+        /// a.Poner a trabajar al Mozo.
+        /// b. Empezar a cocinar.
+        /// 
+        /// En el bloque falso adicionalmente a lo que ya hacía, ahora cambiara el estado de empezar a trabajar de mozo.
+        /// </summary>
         public bool HabilitarCocina
         {
             get
@@ -37,70 +49,70 @@ namespace Entidades.Modelos
             {
                 if (value && !this.HabilitarCocina)
                 {
+                    this.mozo.EmpezarATrabajar = true;
                     this.cancellation = new CancellationTokenSource();
-                    this.IniciarIngreso();
+                    this.EmpezarACocinar();
                 }
                 else
                 {
                     this.cancellation.Cancel();
+                    this.mozo.EmpezarATrabajar = !(this.mozo.EmpezarATrabajar);
                 }
             }
         }
 
         public string Nombre { get => nombre; }
 
+        public Queue<T> Pedidos { get => pedidos; }
+
+
         /// <summary>
         /// Retorna el resultante de dividir la demora en preparación total sobre la cantidad de pedidos finalizados
         /// </summary>
         public double TiempoMedioDePreparacion { get => this.cantPedidosFinalizados == 0 ? 0 : this.demoraPreparacionTotal / this.cantPedidosFinalizados; }
-        
-        public int CantPedidosFinalizados { get => cantPedidosFinalizados; }
 
+        /// <summary>
+        /// En el constructor de Cocinero:
+        /// 1.Instanciar el mozo.
+        /// 2.Instanciar la cola de pedidos.
+        /// 3. Agregar el manejador a OnPedido.
+        /// </summary>
+        /// <param name="nombre"></param>
         public Cocinero(string nombre)
         {
             this.nombre = nombre;
-            //this.cantPedidosFinalizados = 0;
+            this.mozo = new Mozo<T> { };
+            this.pedidos = new Queue<T> { };
+            this.mozo.OnPedido += this.TomarNuevoPedido;
         }
 
         /// <summary>
-        /// Ejecuta en un hilo secundario la acción de que: 
-        /// Mientras no se requiera cancelación de la tarea de: 
-        /// Invocara al mensaje NotificarNuevoIngreso y EsperarProximoIngreso. 
-        /// Incrementar cantidad de pedidos finalizados en 1.
-        /// Guardar ticket en la BD.
+        /// Renombrar el método InciarIngreso por EmpezarACocinar, el cual realizara:
+        /// Mientras no se requiera cancelación:
+        /// a.Verificar que haya pedidos en la cola para luego:
+        /// i.Asignar a pedido en preparación el primer pedido de la lista de pedidos.
+        /// ii. Notificara el pedido.
+        /// iii. Llamará a esperar próximo ingreso.
+        /// iv. Incrementará los pedidos finalizados en 1.
+        /// v. Guardara el Ticket en la BD.
         /// </summary>
-        private void IniciarIngreso()
+        private void EmpezarACocinar()
         {
             this.tarea = Task.Run(() =>
             {
                 while (!this.cancellation.IsCancellationRequested)
                 {
-                    this.NotificarNuevoIngreso();
-                    Thread.Sleep(1000);
-                    this.EsperarProximoIngreso();
-
-                    this.cantPedidosFinalizados++;
-                    DataBaseManager.GuardarTicket(this.Nombre, this.menu);
+                    if (this.Pedidos.Count > 0)
+                    {
+                        this.pedidoEnPreparacion = this.Pedidos.First();
+                        this.OnPedido(this.pedidoEnPreparacion);
+                        Thread.Sleep(1000);
+                        this.EsperarProximoIngreso();
+                        this.cantPedidosFinalizados++;
+                        DataBaseManager.GuardarTicket(this.Nombre, this.pedidoEnPreparacion);
+                    }
                 }
-
             }, this.cancellation.Token);
-        }
-
-        /// <summary>
-        /// El método NotificarNuevoIngreso, verificara si el evento OnIngreso posee suscriptores y en caso exitoso realizara:
-        /// Instanciara un nuevo menú
-        /// Iniciar la preparación del menú. 
-        /// Notificara el menú.
-        /// </summary>
-        private void NotificarNuevoIngreso()
-        {
-            if (this.OnIngreso != null)
-            {
-                this.menu = new();
-                this.menu.IniciarPreparacion();
-                this.menu.ToString();
-                this.OnIngreso.Invoke(this.menu);
-            }
         }
 
         /// <summary>
@@ -116,7 +128,7 @@ namespace Entidades.Modelos
 
             if (this.OnDemora != null)
             {
-                while (!this.cancellation.IsCancellationRequested && !this.menu.Estado)
+                while (!this.cancellation.IsCancellationRequested && !this.pedidoEnPreparacion.Estado)
                 {
                     this.OnDemora.Invoke(tiempoEspera);
                     tiempoEspera++;
@@ -124,6 +136,18 @@ namespace Entidades.Modelos
                 }
             }
             this.demoraPreparacionTotal += tiempoEspera;
+        }
+
+        /// <summary>
+        /// El método tomar nuevo pedido, agregara el pedido a la cola de pedidos si OnPedido posee subscriptores.
+        /// </summary>
+        /// <param name="menu"></param>
+        private void TomarNuevoPedido(T menu)
+        {
+            if (this.OnPedido is not null)
+            {
+                this.pedidos.Enqueue(menu);
+            }
         }
     }
 }

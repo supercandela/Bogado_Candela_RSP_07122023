@@ -15,3 +15,5 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = FrmView
 build_property.ProjectDir = C:\Users\Administrator\Desktop\X\Prog-Labo-2\repos\Labo2\Bogado.Candela.2C.Recuperatorio\Bogado.Candela.Recuperatorio\Bogado.Candela.2C\FrmView\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 

@@ -2,27 +2,29 @@ using Entidades.Exceptions;
 using Entidades.Files;
 using Entidades.Interfaces;
 using Entidades.Modelos;
+using static System.Net.Mime.MediaTypeNames;
+using System;
 
 
 namespace FrmView
 {
     public partial class FrmView : Form
     {
-        private Queue<IComestible> comidas;
+        //i.Eliminar la lista de comidas(Queue), y asignar un atributo llamado comida de tipo IComestible.
         Cocinero<Hamburguesa> hamburguesero;
+        private IComestible? comida;
 
         public FrmView()
         {
             InitializeComponent();
-            this.comidas = new Queue<IComestible>();
             this.hamburguesero = new Cocinero<Hamburguesa>("Ramon");
             //Alumno - agregar manejadores al cocinero
-            this.hamburguesero.OnIngreso += this.MostrarComida;
+            this.hamburguesero.OnPedido += this.MostrarComida;
             this.hamburguesero.OnDemora += this.MostrarConteo;
         }
 
 
-        //Alumno: Realizar los cambios necesarios sobre MostrarComida de manera que se refleje en el formulario los datos de la comida
+        //ii.MostrarComida: remplazar la acción de agregar la comida a la queue por la asignación de la comida al atributo de la clase.
         private void MostrarComida(IComestible comida)
         {
             if (this.InvokeRequired)
@@ -31,12 +33,11 @@ namespace FrmView
             }
             else
             {
-                this.comidas.Enqueue(comida);
+                this.comida = comida;
                 this.pcbComida.Load(comida.Imagen);
                 this.rchElaborando.Text = comida.ToString();
             }
         }
-
 
 
         //Alumno: Realizar los cambios necesarios sobre MostrarConteo de manera que se refleje en el fomrulario el tiempo transucurrido
@@ -53,11 +54,6 @@ namespace FrmView
             }
         }
 
-        private void ActualizarAtendidos(IComestible comida)
-        {
-            this.rchFinalizados.Text += "\n" + comida.Ticket;
-        }
-
         private void btnAbrir_Click(object sender, EventArgs e)
         {
             if (!this.hamburguesero.HabilitarCocina)
@@ -72,14 +68,19 @@ namespace FrmView
             }
         }
 
+        //iii.btnSiguienteClick:
+        //1. remplazar condición del if, donde se evalúa por la cantidad de elementos de la lista, se evaluará si comida no es null.
+        //2. Dentro del bloque verdadero, se eliminará del dequeue.
+        //3. Luego de finalizar la preparacion se agregará el Ticket de la comida al richt text box de finalizados.Ej this.rchFinalizados.Text += "\n" + comida.Ticket;
+        //4. Asignar null a la comida de la clase.
         private void btnSiguiente_Click(object sender, EventArgs e)
         {
-            if (this.comidas.Count > 0)
+            if (this.comida is not null)
             {
-
-                IComestible comida = this.comidas.Dequeue();
+                IComestible comida = this.hamburguesero.Pedidos.Dequeue();
                 comida.FinalizarPreparacion(this.hamburguesero.Nombre);
-                this.ActualizarAtendidos(comida);
+                this.rchFinalizados.Text += "\n" + comida.Ticket;
+                this.comida = null;
             }
             else
             {

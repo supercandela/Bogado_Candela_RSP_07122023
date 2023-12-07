@@ -105,7 +105,7 @@ namespace Entidades.DataBase
                         "VALUES(@0, @1)";
                     SqlCommand cmd = new SqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@0", nombreEmpleado);
-                    cmd.Parameters.AddWithValue("@1", comida.ToString());
+                    cmd.Parameters.AddWithValue("@1", comida.Ticket);
                     connection.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
 
